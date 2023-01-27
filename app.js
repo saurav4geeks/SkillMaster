@@ -6,7 +6,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 //Connecting DB
 mongoose.connect(
-  "mongodb+srv://saurav4geeks:saurav4geeks@cluster0.lsiqumg.mongodb.net/SkillMasterDB?retryWrites=true&w=majority",
+  "mongodb+srv://saurav4geeks:<password>@cluster0.lsiqumg.mongodb.net/SkillMasterDB?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
