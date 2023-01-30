@@ -85,40 +85,82 @@ const employee2 = new Employee({
 // });
 
 //App functions
-app.get("/", function (req, res) {
-  Employee.find({}, function (err, foundEmployees) {
-    res.render("index", { Employees: foundEmployees });
+app
+  .route("/")
+  .get("/", function (req, res) {
+    Employee.find({}, function (err, foundEmployees) {
+      res.render("index", { Employees: foundEmployees });
+    });
+  })
+  .post("/add", function (req, res) {
+    const Ename = req.body.Ename;
+    const email = req.body.email;
+    const Mnumber = req.body.number;
+    const address = req.body.address;
+    const skill = req.body.skill;
+    const employee = new Employee({
+      name: Ename,
+      email: email,
+      mobileNo: Mnumber,
+      Address: address,
+      $addToSet: {
+        Skills: skill,
+      },
+    });
+    employee.save(function (err) {
+      if (!err) {
+        res.send("success!");
+      } else {
+        res.send(err);
+      }
+    });
+    res.redirect("/");
+  })
+  .delete("/", function (req, res) {
+    Employee.deleteMany({}, function (err) {
+      if (!err) {
+        res.send("Success!");
+      } else {
+        res.send(err);
+      }
+    });
   });
-});
-
-app.post("/add", function (req, res) {
-  const Ename = req.body.Ename;
-  const email = req.body.email;
-  const Mnumber = req.body.number;
-  const address = req.body.address;
-  const skill = [];
-  const employee = new Employee({
-    name: Ename,
-    email: email,
-    mobileNo: Mnumber,
-    Address: address,
-    Skill: skill,
+app
+  .route("/employees/:employeeName")
+  .get(function (req, res) {
+    Employee.findOne(
+      { name: req.params.employeeName },
+      function (err, foundEmployee) {
+        if (foundEmployee) {
+          res.send(foundEmployee);
+        } else {
+          res.send("No employees were found");
+        }
+      }
+    );
+  })
+  .patch(function (req, res) {
+    Employee.updateOne(
+      { name: req.params.employeeName },
+      { $set: { email: req.body.email }, $set: { Mnumber: req.body.number } },
+      function (err) {
+        if (!err) {
+          res.send("Successfully Updated!");
+        } else {
+          res.send(err);
+        }
+      }
+    );
+  })
+  .delete(function (req, res) {
+    Employee.deleteOne({ name: req.params.employeeName }, function (err) {
+      if (!err) {
+        res.send("Successfully deleted the corresponding Employee!");
+      } else {
+        res.send(err);
+      }
+    });
   });
-  employee.save();
-  res.redirect("/");
-});
-app.post("/delete", function (req, res) {
-  const ItemId = req.body.del;
-  Employee.findByIdAndRemove(ItemId, function (err) {
-    if (!err) {
-      console.log("Successfully deleted the employee.");
-      res.redirect("/");
-    }
-  });
-});
-app.post("/update",function(req,res){
-    
-})
 app.listen(3000, function () {
   console.log("App started at PORT:3000");
 });
